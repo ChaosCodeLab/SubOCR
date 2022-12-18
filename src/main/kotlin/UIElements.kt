@@ -8,15 +8,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.StateFlow
 
 class UIElements
 {
 
     @Composable
-    fun inputCard(name: String) {
+    fun inputCard(name: String, onTxtChange: (String)-> Unit, path: String) {
 
 
-        var text by remember { mutableStateOf("") }
+        var inputText by remember { mutableStateOf(path) }
 
 
         Column(modifier = Modifier.background(Color(67,67,67), shape = RoundedCornerShape(15.dp)).fillMaxWidth().padding(10.dp).fillMaxWidth())
@@ -27,8 +28,9 @@ class UIElements
 
             Row(modifier = Modifier.fillMaxWidth())
             {
-                TextField(value = text,
-                    onValueChange = {text = it},
+                TextField(value = inputText,
+                    onValueChange = {inputText = it
+                                    onTxtChange(it)},
                     colors = TextFieldDefaults.textFieldColors(backgroundColor = Color(40,40,40), textColor = Color(255,255,255)), shape = RoundedCornerShape(10.dp), modifier = Modifier.weight(1f)
                 )
 
