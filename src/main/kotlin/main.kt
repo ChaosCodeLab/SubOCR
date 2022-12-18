@@ -10,19 +10,13 @@ import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File
 
-@Composable
-@Preview
-fun App() {
-    Box(modifier = Modifier.fillMaxSize().background(Color(40,40,40)).width(1280.dp).height(720.dp))
-    {
-        Text("sieufhgi")
-    }
-}
-
+val ui = UIElements()
 fun main() = application {
 
     val winstate = rememberWindowState(
@@ -56,17 +50,19 @@ fun buttonPanels(columnModifier: Modifier)
         .padding(25.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        val ui = UIElements()
         ui.inputCard("Tesseract 'tessdata' folder location")
         ui.inputCard("Subtitle 'TXTImages' folder location")
         ui.inputCard("Subtitle out folder")
         ui.inputCard("Select Tesseract language")
         Button({
+            /*
             var res = openFileDialog(window = ComposeWindow(),"File selector",list,true)
             for (item in res)
             {
                 println(item.absolutePath)
             }
+
+             */
         }, modifier = Modifier.align(Alignment.CenterHorizontally))
         {
             Text("START OCR")
@@ -79,7 +75,20 @@ fun buttonPanels(columnModifier: Modifier)
 @Composable
 fun outputPanel(columnModifier: Modifier)
 {
-    Column(modifier = columnModifier.background(Color.Blue).fillMaxHeight()) {
+    Column(modifier = columnModifier.background(Color(40,40,40)).fillMaxHeight().padding(20.dp).padding(top = 30.dp)) {
+        Box(modifier = Modifier.background(Color.DarkGray).fillMaxSize().weight(0.9f).padding(bottom = 15.dp))
+        {
+            Column {
+                for (i in 1 ..50)
+                {
+                    Text("SOR: $i")
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(25.dp))
+
+        ui.CustomLinearProgressBar(modifier = Modifier.height(60.dp))
 
     }
 }
@@ -90,7 +99,7 @@ fun openFileDialog(window: ComposeWindow, title: String, allowedExtensions: List
         isMultipleMode = allowMultiSelection
 
         // windows
-        file = allowedExtensions.joinToString(";") { "*$it" } // e.g. '*.jpg'
+        //file = allowedExtensions.joinToString(";") { "*$it" } // e.g. '*.jpg'
 
         // linux
         setFilenameFilter { _, name ->
@@ -98,8 +107,10 @@ fun openFileDialog(window: ComposeWindow, title: String, allowedExtensions: List
                 name.endsWith(it)
             }
         }
-
         isVisible = true
     }.files.toSet()
 }
+
+
+
 

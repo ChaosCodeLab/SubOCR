@@ -45,5 +45,19 @@ class UIElements
 
     }
 
+    @Composable
+    fun CustomLinearProgressBar(modifier: Modifier){
+        Column(modifier = Modifier.fillMaxWidth()) {
+            LinearProgressIndicator(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(15.dp),
+                backgroundColor = Color(95,95,95),
+                color = Color.White, //progress color
+                progress = 0.7f
+            )
+        }
+    }
+
 
 }
