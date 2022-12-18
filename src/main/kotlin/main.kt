@@ -55,16 +55,17 @@ fun buttonPanels(columnModifier: Modifier, viewmodel: MainViewModel)
     val tessdatafolder by viewmodel.tessdatafolder.collectAsState()
     val imagefolder by viewmodel.imagesfolder.collectAsState()
     val suboutfolder by viewmodel.suboutfolder.collectAsState()
+    val ocrlang by viewmodel.ocrlang.collectAsState()
 
     Column(modifier = columnModifier.background(Color(40,40,40))
         .fillMaxHeight()
         .padding(25.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        ui.inputCard("Tesseract 'tessdata' folder location",{ viewmodel.setTessdatafolder(it) }, path = "")
-        ui.inputCard("Subtitle 'TXTImages' folder location",{ viewmodel.setTessdatafolder(it) }, path = "")
-        ui.inputCard("Subtitle out folder",{ viewmodel.setTessdatafolder(it) }, path = "")
-        ui.inputCard("Select Tesseract language",{ viewmodel.setTessdatafolder(it) }, path = "")
+        ui.inputCard("Tesseract 'tessdata' folder location",{ viewmodel.setTessdatafolder(it) }, path = tessdatafolder)
+        ui.inputCard("Subtitle 'TXTImages' folder location",{ viewmodel.setImagesfolder(it) }, path = imagefolder)
+        ui.inputCard("Subtitle out folder",{ viewmodel.setSuboutfolder(it) }, path = suboutfolder)
+        ui.inputCard("Select Tesseract language",{ viewmodel.setLang(it) }, path = ocrlang)
         //ui.inputCard("Subtitle 'TXTImages' folder location")
         //ui.inputCard("Subtitle out folder")
         //ui.inputCard("Select Tesseract language")
@@ -78,7 +79,12 @@ fun buttonPanels(columnModifier: Modifier, viewmodel: MainViewModel)
 
              */
 
-               println(viewmodel.tessdatafolder.value)
+               //println(viewmodel.tessdatafolder.value)
+            val ocr = SubProcesser(viewModel = viewmodel)
+
+            ocr.process()
+
+
         }, modifier = Modifier.align(Alignment.CenterHorizontally))
         {
             Text("START OCR")

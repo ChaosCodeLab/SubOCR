@@ -25,7 +25,6 @@ class UIElements
 
             Text(name, color = Color.White)
             Spacer(modifier = Modifier.height(10.dp))
-
             Row(modifier = Modifier.fillMaxWidth())
             {
                 TextField(value = inputText,
