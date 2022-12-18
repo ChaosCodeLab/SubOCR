@@ -40,7 +40,7 @@ fun main() = application {
         Row(modifier = Modifier.fillMaxSize().background(Color(40,40,40))) {
 
             buttonPanels(columnModifier = Modifier.weight(1f),viewmodel)
-            outputPanel(columnModifier = Modifier.weight(1f))
+            outputPanel(columnModifier = Modifier.weight(1f), viewmodel)
         }
 
 
@@ -95,7 +95,7 @@ fun buttonPanels(columnModifier: Modifier, viewmodel: MainViewModel)
 }
 
 @Composable
-fun outputPanel(columnModifier: Modifier)
+fun outputPanel(columnModifier: Modifier, viewmodel: MainViewModel)
 {
     Column(modifier = columnModifier.background(Color(40,40,40)).fillMaxHeight().padding(20.dp).padding(top = 30.dp)) {
         Box(modifier = Modifier.background(Color.DarkGray).fillMaxSize().weight(0.9f).padding(bottom = 15.dp))
@@ -110,7 +110,9 @@ fun outputPanel(columnModifier: Modifier)
 
         Spacer(modifier = Modifier.height(25.dp))
 
-        ui.CustomLinearProgressBar(modifier = Modifier.height(60.dp))
+        val progress by viewmodel.progress.collectAsState()
+
+        ui.CustomLinearProgressBar(modifier = Modifier.height(60.dp), progress = progress)
 
     }
 }

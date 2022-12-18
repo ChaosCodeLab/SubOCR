@@ -1,5 +1,8 @@
 import model.MainViewModel
+import net.sourceforge.tess4j.Tesseract
 import java.io.File
+import javax.sound.sampled.Line
+import kotlinx.coroutines.*
 
 class SubProcesser(viewModel: MainViewModel)
 {
@@ -17,7 +20,8 @@ class SubProcesser(viewModel: MainViewModel)
 
         println("EVERYTHING IS OK")
 
-
+        val tesseract = initTesseract(viewmodel.tessdatafolder.value, lang = viewmodel.ocrlang.value)
+        processImg(tesseract)
 
 
     }
@@ -108,5 +112,60 @@ class SubProcesser(viewModel: MainViewModel)
         return "OK"
         //if (viewmodel.tessdatafolder)
         //println(viewmodel.tessdatafolder.value)
+    }
+
+    private fun initTesseract(dataPath: String, lang: String): Tesseract
+    {
+        val tesseract = Tesseract()
+        tesseract.setDatapath(dataPath)
+        tesseract.setLanguage(lang)
+        tesseract.setPageSegMode(1)
+        tesseract.setOcrEngineMode(1)
+        return tesseract
+    }
+
+    private fun processImg(tesseract: Tesseract): Array<LineData>
+    {
+        var lines = emptyArray<LineData>()
+
+
+        val images = File(viewmodel.imagesfolder.value).listFiles()
+
+        println(images.size)
+
+
+        var progress = 0f
+
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+
+            var counter = 1f
+
+            images.forEach {
+                progress = counter/images.size
+                println(it.absolutePath)
+                val result = tesseract.doOCR(it.absoluteFile)
+                println(result)
+                counter++
+                println("STATUS: $progress")
+                viewmodel.setProgress(progress)
+            }
+        }
+
+        /*
+        images.forEach {
+            println(it.absolutePath)
+            val result = tesseract.doOCR(it.absoluteFile)
+            println(result)
+        }
+
+         */
+
+
+
+
+
+
+        return lines
     }
 }
