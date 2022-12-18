@@ -3,6 +3,7 @@ import net.sourceforge.tess4j.Tesseract
 import java.io.File
 import javax.sound.sampled.Line
 import kotlinx.coroutines.*
+import java.util.ArrayList
 
 class SubProcesser(viewModel: MainViewModel)
 {
@@ -12,6 +13,7 @@ class SubProcesser(viewModel: MainViewModel)
 
     fun process()
     {
+
         val chk = checkLocations()
         if (chk != "OK")
         {
@@ -22,6 +24,7 @@ class SubProcesser(viewModel: MainViewModel)
 
         val tesseract = initTesseract(viewmodel.tessdatafolder.value, lang = viewmodel.ocrlang.value)
         processImg(tesseract)
+
 
 
     }
@@ -124,9 +127,9 @@ class SubProcesser(viewModel: MainViewModel)
         return tesseract
     }
 
-    private fun processImg(tesseract: Tesseract): Array<LineData>
+    private fun processImg(tesseract: Tesseract)
     {
-        var lines = emptyArray<LineData>()
+        var lines = arrayListOf<LineData>()
 
 
         val images = File(viewmodel.imagesfolder.value).listFiles()
@@ -142,14 +145,25 @@ class SubProcesser(viewModel: MainViewModel)
             var counter = 1f
 
             images.forEach {
+                viewmodel.updateConsole("Image ${counter.toInt()}/${images.size} processed")
                 progress = counter/images.size
                 println(it.absolutePath)
                 val result = tesseract.doOCR(it.absoluteFile)
+                viewmodel.updateConsole(result)
                 println(result)
                 counter++
                 println("STATUS: $progress")
                 viewmodel.setProgress(progress)
+
+                val name = it.name
+                val starttime = "00:${name[2]}${name[3]}:${name[5]}${name[6]},${name[8]}${name[9]}${name[10]}"
+                val endtime = "00:${name[15]}${name[16]}:${name[18]}${name[19]},${name[21]}${name[22]}${name[23]}"
+                val data = LineData(startTime = starttime, endTime = endtime, text = result)
+                lines.add(data)
             }
+
+            writeSubtitle(lines = lines)
+
         }
 
         /*
@@ -163,9 +177,44 @@ class SubProcesser(viewModel: MainViewModel)
 
 
 
+    }
+
+    private fun writeSubtitle(lines: ArrayList<LineData>)
+    {
+
+        val filteredData = arrayListOf<LineData>()
+
+        for (txt in lines)
+        {
+            if (!txt.text.isNullOrEmpty())
+            {
+                if (txt.text.toString().lastIndex > 3)
+                {
+                    filteredData.add(txt)
+                }
+            }
+        }
+
+        filteredData.forEach {
+            println(it.text)
+        }
+
+        println("""${viewmodel.suboutfolder.value}\converted.srt""")
+        File("""${viewmodel.suboutfolder.value}\converted.srt""").printWriter().use { out ->
+
+            var lineNum = 0
+
+            for (data in filteredData)
+            {
+                lineNum++
+                out.println(lineNum)
+                out.println("${data.startTime} --> ${data.endTime}")
+                out.println(data.text)
+                out.println()
+            }
+
+        }
 
 
-
-        return lines
     }
 }

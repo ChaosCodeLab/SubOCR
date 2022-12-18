@@ -101,10 +101,13 @@ fun outputPanel(columnModifier: Modifier, viewmodel: MainViewModel)
         Box(modifier = Modifier.background(Color.DarkGray).fillMaxSize().weight(0.9f).padding(bottom = 15.dp))
         {
             Column {
-                for (i in 1 ..50)
-                {
-                    Text("SOR: $i")
+
+                val consoleOut by viewmodel.consoleOut.collectAsState()
+
+                consoleOut.forEach {
+                    Text(" - $it")
                 }
+
             }
         }
 

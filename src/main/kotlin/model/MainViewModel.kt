@@ -2,6 +2,7 @@ package model
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.io.File
 
 class MainViewModel
 {
@@ -22,6 +23,56 @@ class MainViewModel
 
     private val _progress = MutableStateFlow(0f)
     val progress = _progress.asStateFlow()
+
+    private val _consoleOut = MutableStateFlow(Array<String>(32) { "" })
+    val consoleOut = _consoleOut.asStateFlow()
+
+    init {
+        val path = System.getProperty("user.dir")
+        println(path)
+
+        val savedata = """$path\savedata.data"""
+
+        if (File(savedata).exists())
+        {
+            println("File exists!")
+
+            val data = File(savedata).readLines()
+            println(data)
+            _tessdatafolder.value = data[0]
+            _imagesfolder.value = data[1]
+            _suboutfolder.value = data[2]
+            _ocrlang.value = data[3]
+        }
+        else
+        {
+            File(savedata).printWriter().use {
+                it.println(tessdatafolder.value)
+                it.println(imagesfolder.value)
+                it.println(suboutfolder.value)
+                it.print(ocrlang.value)
+            }
+
+            println("Doesnt exist")
+        }
+
+        println("ARRAY:")
+        consoleOut.value.forEach {
+            println(it)
+        }
+
+        for (num in 0 until consoleOut.value.size)
+        {
+            _consoleOut.value[num] = ""
+        }
+
+        consoleOut.value.forEach {
+            println(it)
+        }
+
+
+    }
+
 
     fun newText()
     {
@@ -51,5 +102,24 @@ class MainViewModel
     fun setProgress(progress: Float)
     {
         _progress.value = progress
+    }
+
+    fun updateConsole(newline: String)
+    {
+        println("START")
+        val oldData = _consoleOut.value
+
+        var newArray = Array<String>(32,{""})
+
+        for (i in 1..oldData.size-1)
+        {
+           newArray[i-1] = oldData[i]
+        }
+        newArray[31] = newline
+
+        _consoleOut.value = newArray
+
+        //consoleOut.value.forEach { println(it) }
+
     }
 }
